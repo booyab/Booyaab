@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>بویاب | عطرت را پیدا کن</title>
+<style>
+  body { font-family: Tahoma, sans-serif; background: #faf6f1; margin: 0; padding: 16px; color: #333; }
+  h1, p.sub { text-align: center; }
+  .filters { background: #fff; padding: 16px; border-radius: 12px; display: grid; gap: 12px; }
+  select, input { width: 100%; padding: 10px; font-size: 16px; box-sizing: border-box; }
+  .card { background: #fff; padding: 16px; border-radius: 12px; margin-top: 12px; }
+  .card h3 { margin: 0 0 8px; }
+</style>
+</head>
+<body>
+  <h1>بویاب</h1>
+  <p class="sub">عطر مناسب خودت را پیدا کن</p>
+
+  <div class="filters">
+    <label>خانواده‌ی بو
+      <select id="family">
+        <option value="">همه</option>
+        <option>شیرین</option><option>چوبی</option><option>تازه</option>
+        <option>گلی</option><option>ادویه‌ای</option>
+      </select>
+    </label>
+    <label>ماندگاری
+      <select id="longevity">
+        <option value="">همه</option>
+        <option>کم</option><option>متوسط</option><option>زیاد</option>
+      </select>
+    </label>
+    <label>فصل
+      <select id="season">
+        <option value="">همه</option>
+        <option>بهار</option><option>تابستان</option><option>پاییز</option><option>زمستان</option>
+      </select>
+    </label>
+    <label>مناسب برای
+      <select id="gender">
+        <option value="">همه</option>
+        <option>زنانه</option><option>مردانه</option><option>یونیسکس</option>
+      </select>
+    </label>
+    <label>حداکثر قیمت (تومان)
+      <input id="price" type="number" placeholder="مثلاً 2000000">
+    </label>
+  </div>
+
+  <div id="results"></div>
+
+  <script src="data.js"></script>
+  <script>
+    function render() {
+      const family = document.getElementById("family").value;
+      const longevity = document.getElementById("longevity").value;
+      const season = document.getElementById("season").value;
+      const gender = document.getElementById("gender").value;
+      const maxPrice = Number(document.getElementById("price").value) || Infinity;
+
+      const result = perfumes.filter(p =>
+        (family === "" || p.family === family) &&
+        (longevity === "" || p.longevity === longevity) &&
+        (season === "" || p.season === season) &&
+        (gender === "" || p.gender === gender || p.gender === "یونیسکس") &&
+        p.price <= maxPrice
+      );
+
+      const box = document.getElementById("results");
+      if (result.length === 0) {
+        box.innerHTML = "<p class='sub'>عطری با این مشخصات پیدا نشد.</p>";
+        return;
+      }
+      box.innerHTML = result.map(p => `
+        <div class="card">
+          <h3>${p.name}</h3>
+          <div>بو: ${p.family} | ماندگاری: ${p.longevity}</div>
+          <div>فصل: ${p.season} | ${p.gender}</div>
+          <div>قیمت: ${p.price.toLocaleString("fa-IR")} تومان</div>
+        </div>`).join("");
+    }
+
+    document.querySelectorAll("select, input").forEach(el =>
+      el.addEventListener("input", render)
+    );
+    render();
+  </script>
+</body>
+</html>
